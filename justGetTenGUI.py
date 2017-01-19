@@ -7,7 +7,7 @@ from pygame.locals import *
 pygame.init()
 
 # Init vars
-mapSize = 4
+mapSize = 5
 cellSize = 32
 xPos = 289
 yPos = 231
@@ -26,7 +26,7 @@ Black = (0, 0, 0)
 White = (255, 255, 255)
 
 # Images loading
-surface = pygame.image.load("images/surface-4x4.png")
+surface = pygame.image.load("images/surface-5x5.png")
 mask = pygame.image.load("images/mask.png").convert_alpha()
 numOne = pygame.image.load("images/1.png")
 numTwo = pygame.image.load("images/2.png")
@@ -37,6 +37,7 @@ numSix = pygame.image.load("images/6.png")
 numSeven = pygame.image.load("images/7.png")
 numEight = pygame.image.load("images/8.png")
 numNine = pygame.image.load("images/9.png")
+numTen= pygame.image.load("images/10.png")
 selectedCellEffect = pygame.image.load("images/selected.png")
 
 # Images object
@@ -49,7 +50,8 @@ cells = {
     6: numSix,
     7: numSeven,
     8: numEight,
-    9: numNine
+    9: numNine,
+    10: numTen
 }
 
 # Functions
@@ -65,8 +67,8 @@ def displayScore():
     surface.fill(White, (820, 100, 50, 50))
     surface.blit(gameScore, (820, 100, 50, 50))
 
-def gameOver():
-    text = fontBig.render("Game Over", True, White)
+def gameWonOrOver(msg):
+    text = fontBig.render(msg, True, White)
     textRect = text.get_rect()
     textX = surface.get_width() / 2 - textRect.width / 2
     textY = surface.get_height() / 2 - textRect.height / 2
@@ -115,10 +117,16 @@ while 1:
     # Calculate mousePos based on gameBoard grid
     mouseX = (pygame.mouse.get_pos()[1] - xPos) // cellSize
     mouseY = (pygame.mouse.get_pos()[0] - yPos) // cellSize
-    
+
+    # Game Over
     if not stillMoves(mapSize, gameBoard) and gameFinished == False:
         gameFinished = True
-        gameOver()
+        gameWonOrOver('Game Over !')
+
+    # Game Won
+    if maxValue(mapSize, gameBoard) == 10:
+        gameFinished = True
+        gameWonOrOver('You Win !')
 
     if not gameFinished:
         displayScore()
