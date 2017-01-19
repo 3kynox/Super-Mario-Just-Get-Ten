@@ -9,7 +9,7 @@ pygame.init()
 def main():
     # Init vars
     global gameBoard
-    mapSize = 5
+    mapSize = 4
     cellSize = 32
     xPos = 289
     yPos = 231
@@ -31,7 +31,7 @@ def main():
     Red = (255, 0, 0)
 
     # Images loading
-    surface = pygame.image.load("images/surface-5x5.png")
+    surface = pygame.image.load("images/surface-4x4.png")
     mask = pygame.image.load("images/mask.png").convert_alpha()
     numOne = pygame.image.load("images/1.png")
     numTwo = pygame.image.load("images/2.png")
@@ -68,7 +68,7 @@ def main():
 
     def displayScore():
         maxScore = maxValue(mapSize, gameArea)
-        gameScore = font.render(maxScore, True, Black)
+        gameScore = font.render(str(maxScore), True, Black)
         surface.fill(White, (820, 100, 50, 50))
         surface.blit(gameScore, (820, 100, 50, 50))
 
@@ -139,7 +139,7 @@ def main():
             gameWonOrOver('Game Over !')
 
         # Game Won
-        if maxValue(mapSize, gameArea) == 10:
+        if maxValue(mapSize, gameArea) == 10 and gameFinished == False:
             gameFinished = True
             gameWonOrOver('You Win !')
 
