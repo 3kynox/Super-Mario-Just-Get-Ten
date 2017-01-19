@@ -12,7 +12,6 @@ cellSize = 32
 xPos = 289
 yPos = 231
 proba=(0.05,0.30,0.6)
-quitGame = False
 gameFinished = False
 firstSelection = False
 size = width, height = 1088, 607
@@ -112,7 +111,7 @@ scoreTitle = font.render('CURRENT SCORE :', True, Black)
 surface.blit(scoreTitle, (650, 100, 50, 50))
 
 # Main Loop
-while not quitGame:
+while 1:
     # Calculate mousePos based on gameBoard grid
     mouseX = (pygame.mouse.get_pos()[1] - xPos) // cellSize
     mouseY = (pygame.mouse.get_pos()[0] - yPos) // cellSize
@@ -127,8 +126,7 @@ while not quitGame:
     # Events loop
     for event in pygame.event.get():
         # Manage quit / closing window event
-        if event.type == QUIT:
-            quitGame = True
+        if event.type == pygame.QUIT: sys.exit()
 
         # Display mousePos on window title bar
         elif event.type == pygame.MOUSEMOTION:
