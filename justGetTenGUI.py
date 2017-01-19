@@ -12,6 +12,8 @@ cellSize = 32
 xPos = 289
 yPos = 231
 proba=(0.05,0.30,0.6)
+quitGame = False
+gameFinished = False
 firstSelection = False
 size = width, height = 1088, 607
 gameBoard = gameBoard(mapSize, proba)
@@ -26,6 +28,7 @@ White = (255, 255, 255)
 
 # Images loading
 surface = pygame.image.load("images/surface-4x4.png")
+mask = pygame.image.load("images/mask.png").convert_alpha()
 numOne = pygame.image.load("images/1.png")
 numTwo = pygame.image.load("images/2.png")
 numThree = pygame.image.load("images/3.png")
@@ -64,11 +67,12 @@ def displayScore():
     surface.blit(gameScore, (820, 100, 50, 50))
 
 def gameOver():
-    text = fontBig.render("Game Over", True, Black)
-    text_rect = text.get_rect()
-    text_x = surface.get_width() / 2 - text_rect.width / 2
-    text_y = surface.get_height() / 2 - text_rect.height / 2
-    surface.blit(text, [text_x, text_y])
+    text = fontBig.render("Game Over", True, White)
+    textRect = text.get_rect()
+    textX = surface.get_width() / 2 - textRect.width / 2
+    textY = surface.get_height() / 2 - textRect.height / 2
+    surface.blit(mask, (0,0))
+    surface.blit(text, [textX, textY])
 
 def imageNumber(myPicture):
     for i in range(1,11,1):
@@ -104,24 +108,27 @@ def replay():
     
 # Startup draw
 drawGrid()
-scoreTitle = font.render('CURRENT SCORE :', True, Black, None)
+scoreTitle = font.render('CURRENT SCORE :', True, Black)
 surface.blit(scoreTitle, (650, 100, 50, 50))
 
 # Main Loop
-while 1:
+while not quitGame:
     # Calculate mousePos based on gameBoard grid
     mouseX = (pygame.mouse.get_pos()[1] - xPos) // cellSize
     mouseY = (pygame.mouse.get_pos()[0] - yPos) // cellSize
+    
+    if not stillMoves(mapSize, gameBoard) and gameFinished == False:
+        gameFinished = True
+        gameOver()
 
-    displayScore()
-
-    #if not stillMoves(mapSize, gameBoard):
-    gameOver()
+    if not gameFinished:
+        displayScore()
 
     # Events loop
     for event in pygame.event.get():
         # Manage quit / closing window event
-        if event.type == pygame.QUIT: sys.exit()
+        if event.type == QUIT:
+            quitGame = True
 
         # Display mousePos on window title bar
         elif event.type == pygame.MOUSEMOTION:
