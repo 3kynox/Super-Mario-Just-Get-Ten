@@ -69,6 +69,38 @@ def gameOver():
     text_x = surface.get_width() / 2 - text_rect.width / 2
     text_y = surface.get_height() / 2 - text_rect.height / 2
     surface.blit(text, [text_x, text_y])
+
+def imageNumber(myPicture):
+    for i in range(1,11,1):
+        if cells[i] == myPicture :
+            if i>1 :
+                return "," + i
+            else:
+                return i
+    return 0
+
+def choose():
+    fichier = input("Entrer le nom du fichier :")
+    if len(fichier)<3 :
+        fichier = "save.txt"
+
+def saveGrid():
+    fichier = choose()
+    sauvegarde = open(fichier, "w")
+    for col in range(mapSize):
+        for row in range(mapSize):
+            sauvegarde.write(imageNumber(gameboard[col][row]))
+    sauvegarde.close()
+    
+def replay():
+    fichier = choose()
+    sauvegarde = open(fichier, "r")
+    chaine = sauvegarde.read()
+    numberList = chaine.split(",")
+    for col in range(mapSize):
+        for row in range(mapSize):
+            surface.blit(cells[numberList[row*mapSize + col]], (yPos + row*cellSize, xPos + col*cellSize, cellSize, cellSize))
+    sauvegarde.close()
     
 # Startup draw
 drawGrid()
