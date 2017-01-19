@@ -7,7 +7,7 @@ from pygame.locals import *
 pygame.init()
 
 # Init vars
-mapSize = 5
+mapSize = 4
 cellSize = 32
 xPos = 289
 yPos = 231
@@ -18,13 +18,14 @@ gameBoard = gameBoard(mapSize, proba)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Super Mario Get Ten")
 font = pygame.font.Font('fonts/impress-bt-42347.ttf', 20)
+fontBig = pygame.font.Font('fonts/impress-bt-42347.ttf', 40)
 
 # Colors
 Black = (0, 0, 0)
 White = (255, 255, 255)
 
 # Images loading
-surface = pygame.image.load("images/surface-5x5.png")
+surface = pygame.image.load("images/surface-4x4.png")
 numOne = pygame.image.load("images/1.png")
 numTwo = pygame.image.load("images/2.png")
 numThree = pygame.image.load("images/3.png")
@@ -58,9 +59,16 @@ def drawGrid():
 
 def displayScore():
     maxScore = maxValue(mapSize, gameBoard)
-    gameScore = font.render(maxScore, True, Black, None)
+    gameScore = font.render(maxScore, True, Black)
     surface.fill(White, (820, 100, 50, 50))
     surface.blit(gameScore, (820, 100, 50, 50))
+
+def gameOver():
+    text = fontBig.render("Game Over", True, Black)
+    text_rect = text.get_rect()
+    text_x = surface.get_width() / 2 - text_rect.width / 2
+    text_y = surface.get_height() / 2 - text_rect.height / 2
+    surface.blit(text, [text_x, text_y])
     
 # Startup draw
 drawGrid()
@@ -74,6 +82,9 @@ while 1:
     mouseY = (pygame.mouse.get_pos()[0] - yPos) // cellSize
 
     displayScore()
+
+    #if not stillMoves(mapSize, gameBoard):
+    gameOver()
 
     # Events loop
     for event in pygame.event.get():

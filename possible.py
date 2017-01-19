@@ -30,6 +30,7 @@ def stillMoves(n, myList):
             if j+1 != n:
                 if myList[i][j] == myList[i][j+1]:
                     return True
+                
     return False # Game Over
 
 def maxValue(n, myList):
