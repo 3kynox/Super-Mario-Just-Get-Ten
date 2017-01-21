@@ -16,6 +16,10 @@ def realNumber(proba):
         return 2
     else:
         return 1
+
+def returnListContent(myList):
+    for x in range(len(myList)):
+        return x
     
 def gameBoard(n, proba):
     matrix = [[realNumber(proba) for x in range(n)] for y in range(n)] 

@@ -86,21 +86,17 @@ def main():
     Grey = (110, 128, 145)
 
     # Functions
-    def drawGrid():
+    def drawGrid(gameArea):
         for col in range(mapSize):
             for row in range(mapSize):
                 # Prepare to display correct numeric image according gameArea cell value in the correct position
                 surface.blit(cells[gameArea[col][row]], (yPos + row*cellSize, xPos + col*cellSize, cellSize, cellSize))
 
     def startupDisplay():
-        drawGrid()
         scoreTitle = font.render('CURRENT SCORE :', True, Black)
         numTurnsTitle = font.render('NUMTURN COUNT :', True, Black)
         surface.blit(scoreTitle, (650, 100, 50, 50))
         surface.blit(numTurnsTitle, (650, 120, 50, 50))
-
-        # Play music
-        pygame.mixer.music.play(-1)
 
         # Draw buttons
         global fourButton, fiveButton, sixButton, loadButton, saveButton, mainQuitButton
@@ -169,32 +165,42 @@ def main():
     def saveGrid():
         file = choose()
         save = open(file, "w")
-        output = ' '
+        output = ''
+        i = 0
         for col in range(mapSize):
+            if i > 0:
+                output += '\n'
             for row in range(mapSize):
                 if col > 0 or row > 0:
-                    output += ','
+                    if i == 0:
+                        output += ','
+                    if i > 0 and row != 0:
+                        output += ','
                 output += str(gameArea[col][row])
-                    
+            
+            i += 1
+        
         save.write(output)
         save.close()
 
-    # Load the saved grid
-    def replay():
+    def loadGrid():
         file = choose()
-        try:
-            save = open(file, "r")
-            chain = save.read()
-            numberList = chain.split(",")
-            for col in range(mapSize):
-                for row in range(mapSize):
-                    surface.blit(cells[int(numberList[row+col*mapSize])], (yPos + row*cellSize, xPos + col*cellSize, cellSize, cellSize))
-            save.close()
-        except:
-            print("The file does not exists!")
-        
+        gameArea = []
+        i = 0
+        with open(file, 'r') as openfile:
+            for line in openfile:
+                gameArea.append([])
+                gameArea[i] = [int(n) for n in line.split(',')]
+                i += 1
+        openfile.close()
+
+        return gameArea
+    
     # Startup draw
+    drawGrid(gameArea)
     startupDisplay()
+    # Play music
+    pygame.mixer.music.play(-1)
 
     # Main Loop
     while play_again:
@@ -241,21 +247,39 @@ def main():
                     mapSize = 4
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-4x4.png")
+                    drawGrid(gameArea)
                     startupDisplay()
                 elif fiveButton.collidepoint(pygame.mouse.get_pos()):
                     mapSize = 5
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-5x5.png")
+                    drawGrid(gameArea)
                     startupDisplay()
                 elif sixButton.collidepoint(pygame.mouse.get_pos()):
                     mapSize = 6
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-6x6.png")
+                    drawGrid(gameArea)
                     startupDisplay()
                 elif saveButton.collidepoint(pygame.mouse.get_pos()):
                     saveGrid()
                 elif loadButton.collidepoint(pygame.mouse.get_pos()):
-                    replay()
+                    gameArea = loadGrid()
+                    if len(gameArea) == 4:
+                        mapSize = 4
+                        surface = pygame.image.load("images/surface-4x4.png")
+                        drawGrid(gameArea)
+                        startupDisplay()
+                    if len(gameArea) == 5:
+                        mapSize = 5
+                        surface = pygame.image.load("images/surface-5x5.png")
+                        drawGrid(gameArea)
+                        startupDisplay()
+                    if len(gameArea) == 6:
+                        mapSize = 6
+                        surface = pygame.image.load("images/surface-6x6.png")
+                        drawGrid(gameArea)
+                        startupDisplay()
                 elif mainQuitButton.collidepoint(pygame.mouse.get_pos()):
                     print('See u soon !')
                     pygame.quit()
@@ -298,7 +322,7 @@ def main():
                                 modification(mapSize, gameArea, tupleList)
                                 gravity(mapSize, gameArea, proba)
                                 if maxValue(mapSize, gameArea) > maxBefore: oneUp.play()
-                                drawGrid()
+                                drawGrid(gameArea)
 
         screen.blit(surface, (0, 0))
         pygame.display.flip()
