@@ -31,6 +31,7 @@ def main():
     cellSize = 32
     xPos = 289
     yPos = 231
+    numTurns = 0
     play_again = 1
     proba=(0.05,0.30,0.6)
     gameFinished = False
@@ -87,8 +88,11 @@ def main():
     def displayScore():
         maxScore = maxValue(mapSize, gameArea)
         gameScore = font.render(str(maxScore), True, Black)
+        numTurnsScore = font.render(str(numTurns), True, Black)
         surface.fill(White, (820, 100, 50, 50))
         surface.blit(gameScore, (820, 100, 50, 50))
+        surface.fill(White, (820, 120, 50, 50))
+        surface.blit(numTurnsScore, (820, 120, 50, 50))
 
     def gameWonOrOver(msg):
         # Draw end game screen
@@ -152,7 +156,9 @@ def main():
     # Startup draw
     drawGrid()
     scoreTitle = font.render('CURRENT SCORE :', True, Black)
+    numTurnsTitle = font.render('NUMTURN COUNT :', True, Black)
     surface.blit(scoreTitle, (650, 100, 50, 50))
+    surface.blit(numTurnsTitle, (650, 120, 50, 50))
 
     # Main Loop
     while play_again:
@@ -203,10 +209,10 @@ def main():
             elif event.type == MOUSEBUTTONDOWN and gameFinished:
                 if quitButton.collidepoint(pygame.mouse.get_pos()):
                     print('See u soon !')
+                    pygame.quit()
                     sys.exit()
                 elif retryButton.collidepoint(pygame.mouse.get_pos()):
-                    play_again = False
-                    return main()
+                    main()
             
             if firstSelection == False:
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -228,6 +234,7 @@ def main():
                     if mouseX >= 0 and mouseY >= 0:
                         if mouseX < mapSize and mouseY < mapSize:
                             if adjCells(mapSize, gameArea, mouseX, mouseY):
+                                numTurns += 1
                                 firstSelection= False
                                 myTuple = (mouseX, mouseY)
                                 tupleList = [myTuple]
