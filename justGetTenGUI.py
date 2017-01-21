@@ -1,3 +1,20 @@
+"""
+@ToDo Python
+- Laura : Put save file on save folder
+- Laura : If file do not exists at load, do we want to quit ? Or just display error message ?
+- Laura : If file exists case, replacement ? Message indicates what to do
+- Laura : take care of 4x4 5x5 6x6 file loading mode
+- Laura & me : integrate graphic mode for loading / saving files
+- Quit game button
+- Reset Surface 4x4 5x5 6x6 buttons
+- Documentation of the code (fully done)
+- Timer game modes
+- Rewrite part 4 function as explained in course subject
+- Music (at start game and in timer game mode, when timer almost done)
+- Functions game sounds
+- Some animations at cells startup placement and on cells fusion
+"""
+
 # -*- coding: utf-8 -*-
 import sys, pygame
 from bases import *
