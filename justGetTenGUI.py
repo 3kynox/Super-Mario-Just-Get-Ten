@@ -1,10 +1,6 @@
 """
 @ToDo Python
 - Laura : Put save file on save folder
-- Laura : If file do not exists at load, do we want to quit ? Or just display error message ?
-- Laura : If file exists case, replacement ? Message indicates what to do
-- Laura : take care of 4x4 5x5 6x6 file loading mode
-- Laura & me : integrate graphic mode for loading / saving files
 - Documentation of the code (fully done)
 - Timer game modes
 - Rewrite part 4 function as explained in course subject
@@ -63,6 +59,9 @@ def main():
     # Sounds loading
     pygame.mixer.music.load('sounds/music1.ogg')
     oneUp = pygame.mixer.Sound('sounds/smb_1-up.wav')
+    noAdj = pygame.mixer.Sound('sounds/smb_fireworks.wav')
+    fuseUp = pygame.mixer.Sound('sounds/smb_jump.wav')
+    newGame = pygame.mixer.Sound('sounds/smb_powerup.wav')
 
     # Images object
     cells = {
@@ -249,18 +248,21 @@ def main():
                     surface = pygame.image.load("images/surface-4x4.png")
                     drawGrid(gameArea)
                     startupDisplay()
+                    newGame.play()
                 elif fiveButton.collidepoint(pygame.mouse.get_pos()):
                     mapSize = 5
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-5x5.png")
                     drawGrid(gameArea)
                     startupDisplay()
+                    newGame.play()
                 elif sixButton.collidepoint(pygame.mouse.get_pos()):
                     mapSize = 6
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-6x6.png")
                     drawGrid(gameArea)
                     startupDisplay()
+                    newGame.play()
                 elif saveButton.collidepoint(pygame.mouse.get_pos()):
                     saveGrid()
                 elif loadButton.collidepoint(pygame.mouse.get_pos()):
@@ -270,16 +272,19 @@ def main():
                         surface = pygame.image.load("images/surface-4x4.png")
                         drawGrid(gameArea)
                         startupDisplay()
+                        newGame.play()
                     if len(gameArea) == 5:
                         mapSize = 5
                         surface = pygame.image.load("images/surface-5x5.png")
                         drawGrid(gameArea)
                         startupDisplay()
+                        newGame.play()
                     if len(gameArea) == 6:
                         mapSize = 6
                         surface = pygame.image.load("images/surface-6x6.png")
                         drawGrid(gameArea)
                         startupDisplay()
+                        newGame.play()
                 elif mainQuitButton.collidepoint(pygame.mouse.get_pos()):
                     print('See u soon !')
                     pygame.quit()
@@ -307,7 +312,7 @@ def main():
                                     surface.blit(selectedCellEffect, (yPos + currentPos[1]*cellSize, xPos + currentPos[0]*cellSize, cellSize, cellSize))
                             else:
                                 # play error sound, no adjacent cells
-                                print('No Adj Cells')  
+                                noAdj.play()  
             elif firstSelection == True:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if mouseX >= 0 and mouseY >= 0:
@@ -321,6 +326,7 @@ def main():
                                 propagation(mapSize, gameArea, myTuple, tupleList)
                                 modification(mapSize, gameArea, tupleList)
                                 gravity(mapSize, gameArea, proba)
+                                fuseUp.play()
                                 if maxValue(mapSize, gameArea) > maxBefore: oneUp.play()
                                 drawGrid(gameArea)
 
