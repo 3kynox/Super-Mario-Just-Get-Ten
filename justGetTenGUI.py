@@ -5,7 +5,6 @@
 - Laura : If file exists case, replacement ? Message indicates what to do
 - Laura : take care of 4x4 5x5 6x6 file loading mode
 - Laura & me : integrate graphic mode for loading / saving files
-- Reset Surface 4x4 5x5 6x6 buttons
 - Documentation of the code (fully done)
 - Timer game modes
 - Rewrite part 4 function as explained in course subject
@@ -25,6 +24,13 @@ pygame.init()
 
 def main():
     # Init vars
+    # Colors
+    Black = (0, 0, 0)
+    White = (255, 255, 255)
+    Green = (0, 205, 0)
+    Red = (255, 0, 0)
+    Grey = (110, 128, 145)
+    
     global gameArea, gameBoard, mapSize, surface
     mapSize = 5
     cellSize = 32
@@ -33,21 +39,18 @@ def main():
     numTurns = 0
     play_again = 1
     proba=(0.05,0.30,0.6)
+    savePushed = False
+    loadPushed = False
     gameFinished = False
     firstSelection = False
+    clock = pygame.time.Clock()
     size = width, height = 1088, 607
     gameArea = gameBoard(mapSize, proba)
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Super Mario Get Ten")
+    fontSmall = pygame.font.Font('fonts/impress-bt-42347.ttf', 18)
     font = pygame.font.Font('fonts/impress-bt-42347.ttf', 20)
     fontBig = pygame.font.Font('fonts/impress-bt-42347.ttf', 40)
-
-    # Colors
-    Black = (0, 0, 0)
-    White = (255, 255, 255)
-    Green = (0, 205, 0)
-    Red = (255, 0, 0)
-    Grey = (110, 128, 145)
 
     # Images loading
     surface = pygame.image.load("images/surface-5x5.png")
@@ -93,19 +96,27 @@ def main():
         surface.blit(numTurnsTitle, (650, 120, 50, 50))
 
         # Draw buttons
-        global fourButton, fiveButton, sixButton, saveButton, mainQuitButton
-        fourButton = pygame.draw.rect(surface, Grey, (637,250,85,23))
+        global fourButton, fiveButton, sixButton, loadButton, saveButton, mainQuitButton
+        fourButton = pygame.draw.rect(surface, Grey, (637,245,85,23))
         fourText = font.render("4x4 Grid", True, White)
-        surface.blit(fourText, (642,248,100,20))
-        fiveButton = pygame.draw.rect(surface, Grey, (726,250,85,23))
+        surface.blit(fourText, (642,243,100,20))
+        fiveButton = pygame.draw.rect(surface, Grey, (726,245,85,23))
         fiveText = font.render("5x5 Grid", True, White)
-        surface.blit(fiveText, (731,248,100,20))
-        sixButton = pygame.draw.rect(surface, Grey, (815,250,85,23))
+        surface.blit(fiveText, (731,243,100,20))
+        sixButton = pygame.draw.rect(surface, Grey, (815,245,85,23))
         sixText = font.render("6x6 Grid", True, White)
-        surface.blit(sixText, (820,248,100,20))
-        mainQuitButton = pygame.draw.rect(surface, Grey, (810,290,50,23))
+        surface.blit(sixText, (820,243,100,20))
+        loadButton = pygame.draw.rect(surface, Grey, (643,270,50,23))
+        loadText = font.render("Load", True, White)
+        surface.blit(loadText, (648,268,100,20))
+        saveButton = pygame.draw.rect(surface, Grey, (698,270,50,23))
+        saveText = font.render("Save", True, White)
+        surface.blit(saveText, (703,268,100,20))
+        mainQuitButton = pygame.draw.rect(surface, Grey, (810,270,50,23))
         mainQuitText = font.render("Quit", True, White)
-        surface.blit(mainQuitText, (817,288,100,20))
+        surface.blit(mainQuitText, (817,268,100,20))
+        consoleText = fontSmall.render("Load / Save filename in console!", True, Red)
+        surface.blit(consoleText, (640,302,100,20))
         
     def displayScore():
         maxScore = maxValue(mapSize, gameArea)
@@ -173,13 +184,15 @@ def main():
                     surface.blit(cells[int(numberList[row+col*mapSize])], (yPos + row*cellSize, xPos + col*cellSize, cellSize, cellSize))
             save.close()
         except:
-            print("The file do not exists!")
+            print("The file does not exists!")
         
     # Startup draw
     startupDisplay()
 
     # Main Loop
     while play_again:
+        clock.tick(30)
+        
         # Calculate mousePos based on gameArea grid
         mouseX = (pygame.mouse.get_pos()[1] - xPos) // cellSize
         mouseY = (pygame.mouse.get_pos()[0] - yPos) // cellSize
@@ -204,15 +217,6 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-            # Manage saving and loading file event
-            elif event.type == pygame.KEYDOWN:
-                #s pour sauvegarder
-                if event.key == pygame.K_s:
-                    saveGrid()
-                #r pour charger
-                elif event.key == pygame.K_r:
-                    replay()
-
             # Display mousePos on window title bar
             elif event.type == pygame.MOUSEMOTION:
                 if mouseX >= 0 and mouseY >= 0:
@@ -224,6 +228,7 @@ def main():
                 else:
                     pygame.display.set_caption("Super Mario Get Ten")
 
+            # Buttons actions
             elif event.type == MOUSEBUTTONDOWN:
                 if fourButton.collidepoint(pygame.mouse.get_pos()):
                     mapSize = 4
@@ -240,9 +245,11 @@ def main():
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-6x6.png")
                     startupDisplay()
-                    
-            elif event.type == MOUSEBUTTONDOWN:
-                if mainQuitButton.collidepoint(pygame.mouse.get_pos()):
+                elif saveButton.collidepoint(pygame.mouse.get_pos()):
+                    saveGrid()
+                elif loadButton.collidepoint(pygame.mouse.get_pos()):
+                    replay()
+                elif mainQuitButton.collidepoint(pygame.mouse.get_pos()):
                     print('See u soon !')
                     pygame.quit()
                     sys.exit()
@@ -283,9 +290,8 @@ def main():
                                 modification(mapSize, gameArea, tupleList)
                                 gravity(mapSize, gameArea, proba)
                                 drawGrid()
-                          
 
         screen.blit(surface, (0, 0))
-        pygame.display.update()
+        pygame.display.flip()
 
-main()
+if __name__ == '__main__': main()
