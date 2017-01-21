@@ -3,9 +3,6 @@
 - Laura : Put save file on save folder
 - Documentation of the code (fully done)
 - Timer game modes
-- Rewrite part 4 function as explained in course subject
-- Music (at start game and in timer game mode, when timer almost done)
-- Functions game sounds
 - Some animations at cells startup placement and on cells fusion
 """
 
@@ -25,6 +22,8 @@ def main():
     cellSize = 32
     xPos = 289
     yPos = 231
+    frame_count = 0
+    frame_rate = 60
     numTurns = 0
     play_again = 1
     proba=(0.05,0.30,0.6)
@@ -203,7 +202,15 @@ def main():
 
     # Main Loop
     while play_again:
-        clock.tick(30)
+        total_seconds = frame_count // frame_rate
+        minutes = total_seconds // 60
+        seconds = total_seconds % 60
+        surface.fill(White, (740, 183, 60, 20))
+        output_string = "{0:02}:{1:02}".format(minutes, seconds)
+        timer = font.render(output_string, True, Black)
+        surface.blit(timer, [740, 180])
+        frame_count += 1
+        clock.tick(frame_rate)
         
         # Calculate mousePos based on gameArea grid
         mouseX = (pygame.mouse.get_pos()[1] - xPos) // cellSize
@@ -243,6 +250,7 @@ def main():
             # Buttons actions
             elif event.type == MOUSEBUTTONDOWN:
                 if fourButton.collidepoint(pygame.mouse.get_pos()):
+                    frame_count = 0
                     mapSize = 4
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-4x4.png")
@@ -250,6 +258,7 @@ def main():
                     startupDisplay()
                     newGame.play()
                 elif fiveButton.collidepoint(pygame.mouse.get_pos()):
+                    frame_count = 0
                     mapSize = 5
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-5x5.png")
@@ -257,6 +266,7 @@ def main():
                     startupDisplay()
                     newGame.play()
                 elif sixButton.collidepoint(pygame.mouse.get_pos()):
+                    frame_count = 0
                     mapSize = 6
                     gameArea = gameBoard(mapSize, proba)
                     surface = pygame.image.load("images/surface-6x6.png")
@@ -267,6 +277,7 @@ def main():
                     saveGrid()
                 elif loadButton.collidepoint(pygame.mouse.get_pos()):
                     gameArea = loadGrid()
+                    frame_count = 0
                     if len(gameArea) == 4:
                         mapSize = 4
                         surface = pygame.image.load("images/surface-4x4.png")
