@@ -108,54 +108,46 @@ def main():
         quitText = font.render("Quit", True, White)
         surface.blit(quitText, (580,328,100,20))
 
-    def imageNumber(myPicture):
-        for i in range(1,11,1):
-            if cells[i] == myPicture :
-                if i>1 :
-                    return "," + str(i)
-                else:
-                    return str(i)
-        return "0"
-
+    # Choose file name at saving/loading file
     def choose():
-        fichier = input('Entrer le nom du fichier : ')
-        if len(fichier)<3 :
-            fichier = "save.txt"
+        file = input('Enter file name : ')
+        if len(file)<3 :
+            file = "save.txt"
         else:
             try:
-                i = fichier.index('.')
+                i = file.index('.')
             except:
-                fichier += '.txt'
+                file += '.txt'
                 
-        return fichier
+        return file
 
+    # Save the current grid
     def saveGrid():
-        fichier = choose()
-        sauvegarde = open(fichier, "w")
-        sortie = ' '
+        file = choose()
+        save = open(file, "w")
+        output = ' '
         for col in range(mapSize):
             for row in range(mapSize):
                 if col > 0 or row > 0:
-                    sortie += ','
-                sortie += str(gameArea[col][row])
+                    output += ','
+                output += str(gameArea[col][row])
                     
-        sauvegarde.write(sortie)
-        sauvegarde.close()
-        
+        save.write(output)
+        save.close()
+
+    # Load the saved grid
     def replay():
-        fichier = choose()
+        file = choose()
         try:
-            sauvegarde = open(fichier, "r")
-            chaine = sauvegarde.read()
-            numberList = chaine.split(",")
+            save = open(file, "r")
+            chain = save.read()
+            numberList = chain.split(",")
             for col in range(mapSize):
                 for row in range(mapSize):
                     surface.blit(cells[int(numberList[row+col*mapSize])], (yPos + row*cellSize, xPos + col*cellSize, cellSize, cellSize))
-            sauvegarde.close()
+            save.close()
         except:
-            print("Le fichier n'existe pas !")
-            pygame.quit()
-            sys.exit()
+            print("The file do not exists!")
         
     # Startup draw
     drawGrid()
