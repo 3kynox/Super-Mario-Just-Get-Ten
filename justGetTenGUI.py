@@ -5,7 +5,6 @@
 - Laura : If file exists case, replacement ? Message indicates what to do
 - Laura : take care of 4x4 5x5 6x6 file loading mode
 - Laura & me : integrate graphic mode for loading / saving files
-- Quit game button
 - Reset Surface 4x4 5x5 6x6 buttons
 - Documentation of the code (fully done)
 - Timer game modes
@@ -26,8 +25,8 @@ pygame.init()
 
 def main():
     # Init vars
-    global gameBoard
-    mapSize = 6
+    global gameArea, gameBoard, mapSize, surface
+    mapSize = 5
     cellSize = 32
     xPos = 289
     yPos = 231
@@ -51,7 +50,7 @@ def main():
     Grey = (110, 128, 145)
 
     # Images loading
-    surface = pygame.image.load("images/surface-6x6.png")
+    surface = pygame.image.load("images/surface-5x5.png")
     mask = pygame.image.load("images/mask.png").convert_alpha()
     numOne = pygame.image.load("images/1.png")
     numTwo = pygame.image.load("images/2.png")
@@ -86,6 +85,28 @@ def main():
                 # Prepare to display correct numeric image according gameArea cell value in the correct position
                 surface.blit(cells[gameArea[col][row]], (yPos + row*cellSize, xPos + col*cellSize, cellSize, cellSize))
 
+    def startupDisplay():
+        drawGrid()
+        scoreTitle = font.render('CURRENT SCORE :', True, Black)
+        numTurnsTitle = font.render('NUMTURN COUNT :', True, Black)
+        surface.blit(scoreTitle, (650, 100, 50, 50))
+        surface.blit(numTurnsTitle, (650, 120, 50, 50))
+
+        # Draw buttons
+        global fourButton, fiveButton, sixButton, saveButton, mainQuitButton
+        fourButton = pygame.draw.rect(surface, Grey, (637,250,85,23))
+        fourText = font.render("4x4 Grid", True, White)
+        surface.blit(fourText, (642,248,100,20))
+        fiveButton = pygame.draw.rect(surface, Grey, (726,250,85,23))
+        fiveText = font.render("5x5 Grid", True, White)
+        surface.blit(fiveText, (731,248,100,20))
+        sixButton = pygame.draw.rect(surface, Grey, (815,250,85,23))
+        sixText = font.render("6x6 Grid", True, White)
+        surface.blit(sixText, (820,248,100,20))
+        mainQuitButton = pygame.draw.rect(surface, Grey, (810,290,50,23))
+        mainQuitText = font.render("Quit", True, White)
+        surface.blit(mainQuitText, (817,288,100,20))
+        
     def displayScore():
         maxScore = maxValue(mapSize, gameArea)
         gameScore = font.render(str(maxScore), True, Black)
@@ -155,16 +176,7 @@ def main():
             print("The file do not exists!")
         
     # Startup draw
-    drawGrid()
-    scoreTitle = font.render('CURRENT SCORE :', True, Black)
-    numTurnsTitle = font.render('NUMTURN COUNT :', True, Black)
-    surface.blit(scoreTitle, (650, 100, 50, 50))
-    surface.blit(numTurnsTitle, (650, 120, 50, 50))
-
-    global mainQuitButton
-    mainQuitButton = pygame.draw.rect(surface, Grey, (810,290,50,23))
-    mainQuitText = font.render("Quit", True, White)
-    surface.blit(mainQuitText, (817,288,100,20))
+    startupDisplay()
 
     # Main Loop
     while play_again:
@@ -211,6 +223,24 @@ def main():
                         pygame.display.set_caption("Super Mario Get Ten")
                 else:
                     pygame.display.set_caption("Super Mario Get Ten")
+
+            elif event.type == MOUSEBUTTONDOWN:
+                if fourButton.collidepoint(pygame.mouse.get_pos()):
+                    mapSize = 4
+                    gameArea = gameBoard(mapSize, proba)
+                    surface = pygame.image.load("images/surface-4x4.png")
+                    startupDisplay()
+                elif fiveButton.collidepoint(pygame.mouse.get_pos()):
+                    mapSize = 5
+                    gameArea = gameBoard(mapSize, proba)
+                    surface = pygame.image.load("images/surface-5x5.png")
+                    startupDisplay()
+                elif sixButton.collidepoint(pygame.mouse.get_pos()):
+                    mapSize = 6
+                    gameArea = gameBoard(mapSize, proba)
+                    surface = pygame.image.load("images/surface-6x6.png")
+                    startupDisplay()
+                    
             elif event.type == MOUSEBUTTONDOWN:
                 if mainQuitButton.collidepoint(pygame.mouse.get_pos()):
                     print('See u soon !')
