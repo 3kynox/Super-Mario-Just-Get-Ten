@@ -46,8 +46,9 @@ def main():
     # Colors
     Black = (0, 0, 0)
     White = (255, 255, 255)
-    Green = (0, 204, 0)
+    Green = (0, 205, 0)
     Red = (255, 0, 0)
+    Grey = (110, 128, 145)
 
     # Images loading
     surface = pygame.image.load("images/surface-6x6.png")
@@ -160,6 +161,11 @@ def main():
     surface.blit(scoreTitle, (650, 100, 50, 50))
     surface.blit(numTurnsTitle, (650, 120, 50, 50))
 
+    global mainQuitButton
+    mainQuitButton = pygame.draw.rect(surface, Grey, (810,290,50,23))
+    mainQuitText = font.render("Quit", True, White)
+    surface.blit(mainQuitText, (817,288,100,20))
+
     # Main Loop
     while play_again:
         # Calculate mousePos based on gameArea grid
@@ -205,7 +211,12 @@ def main():
                         pygame.display.set_caption("Super Mario Get Ten")
                 else:
                     pygame.display.set_caption("Super Mario Get Ten")
-
+            elif event.type == MOUSEBUTTONDOWN:
+                if mainQuitButton.collidepoint(pygame.mouse.get_pos()):
+                    print('See u soon !')
+                    pygame.quit()
+                    sys.exit()
+            
             elif event.type == MOUSEBUTTONDOWN and gameFinished:
                 if quitButton.collidepoint(pygame.mouse.get_pos()):
                     print('See u soon !')
