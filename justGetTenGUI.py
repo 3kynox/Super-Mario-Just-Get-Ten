@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys, pygame
 from bases import *
 from merge import *
@@ -9,7 +10,7 @@ pygame.init()
 def main():
     # Init vars
     global gameBoard
-    mapSize = 4
+    mapSize = 6
     cellSize = 32
     xPos = 289
     yPos = 231
@@ -31,7 +32,7 @@ def main():
     Red = (255, 0, 0)
 
     # Images loading
-    surface = pygame.image.load("images/surface-4x4.png")
+    surface = pygame.image.load("images/surface-6x6.png")
     mask = pygame.image.load("images/mask.png").convert_alpha()
     numOne = pygame.image.load("images/1.png")
     numTwo = pygame.image.load("images/2.png")
@@ -94,33 +95,50 @@ def main():
         for i in range(1,11,1):
             if cells[i] == myPicture :
                 if i>1 :
-                    return "," + i
+                    return "," + str(i)
                 else:
-                    return i
-        return 0
+                    return str(i)
+        return "0"
 
     def choose():
-        fichier = input("Entrer le nom du fichier :")
+        fichier = input('Entrer le nom du fichier : ')
         if len(fichier)<3 :
             fichier = "save.txt"
+        else:
+            try:
+                i = fichier.index('.')
+            except:
+                fichier += '.txt'
+                
+        return fichier
 
     def saveGrid():
         fichier = choose()
         sauvegarde = open(fichier, "w")
+        sortie = ' '
         for col in range(mapSize):
             for row in range(mapSize):
-                sauvegarde.write(imageNumber(gameArea[col][row]))
+                if col > 0 or row > 0:
+                    sortie += ','
+                sortie += str(gameArea[col][row])
+                    
+        sauvegarde.write(sortie)
         sauvegarde.close()
         
     def replay():
         fichier = choose()
-        sauvegarde = open(fichier, "r")
-        chaine = sauvegarde.read()
-        numberList = chaine.split(",")
-        for col in range(mapSize):
-            for row in range(mapSize):
-                surface.blit(cells[numberList[row*mapSize + col]], (yPos + row*cellSize, xPos + col*cellSize, cellSize, cellSize))
-        sauvegarde.close()
+        try:
+            sauvegarde = open(fichier, "r")
+            chaine = sauvegarde.read()
+            numberList = chaine.split(",")
+            for col in range(mapSize):
+                for row in range(mapSize):
+                    surface.blit(cells[int(numberList[row+col*mapSize])], (yPos + row*cellSize, xPos + col*cellSize, cellSize, cellSize))
+            sauvegarde.close()
+        except:
+            print("Le fichier n'existe pas !")
+            pygame.quit()
+            sys.exit()
         
     # Startup draw
     drawGrid()
@@ -149,7 +167,18 @@ def main():
         # Events loop
         for event in pygame.event.get():
             # Manage quit / closing window event
-            if event.type == pygame.QUIT: sys.exit()
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            # Manage saving and loading file event
+            elif event.type == pygame.KEYDOWN:
+                #s pour sauvegarder
+                if event.key == pygame.K_s:
+                    saveGrid()
+                #r pour charger
+                elif event.key == pygame.K_r:
+                    replay()
 
             # Display mousePos on window title bar
             elif event.type == pygame.MOUSEMOTION:

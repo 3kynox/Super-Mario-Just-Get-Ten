@@ -22,9 +22,10 @@ def gameBoard(n, proba):
     return matrix
 
 def display(matrix):
+    end = " "
     for row in matrix:
         for val in row:
-            print(val, end=" ")
+            print(val, end)
         print()
 
     
