@@ -24,13 +24,6 @@ pygame.init()
 
 def main():
     # Init vars
-    # Colors
-    Black = (0, 0, 0)
-    White = (255, 255, 255)
-    Green = (0, 205, 0)
-    Red = (255, 0, 0)
-    Grey = (110, 128, 145)
-    
     global gameArea, gameBoard, mapSize, surface
     mapSize = 5
     cellSize = 32
@@ -67,6 +60,10 @@ def main():
     numTen= pygame.image.load("images/10.png")
     selectedCellEffect = pygame.image.load("images/selected.png")
 
+    # Sounds loading
+    pygame.mixer.music.load('sounds/music1.ogg')
+    oneUp = pygame.mixer.Sound('sounds/smb_1-up.wav')
+
     # Images object
     cells = {
         1: numOne,
@@ -80,6 +77,13 @@ def main():
         9: numNine,
         10: numTen
     }
+    
+    # Colors
+    Black = (0, 0, 0)
+    White = (255, 255, 255)
+    Green = (0, 205, 0)
+    Red = (255, 0, 0)
+    Grey = (110, 128, 145)
 
     # Functions
     def drawGrid():
@@ -94,6 +98,9 @@ def main():
         numTurnsTitle = font.render('NUMTURN COUNT :', True, Black)
         surface.blit(scoreTitle, (650, 100, 50, 50))
         surface.blit(numTurnsTitle, (650, 120, 50, 50))
+
+        # Play music
+        pygame.mixer.music.play(-1)
 
         # Draw buttons
         global fourButton, fiveButton, sixButton, loadButton, saveButton, mainQuitButton
@@ -116,7 +123,7 @@ def main():
         mainQuitText = font.render("Quit", True, White)
         surface.blit(mainQuitText, (817,268,100,20))
         consoleText = fontSmall.render("Load / Save filename in console!", True, Red)
-        surface.blit(consoleText, (640,302,100,20))
+        surface.blit(consoleText, (6402,302,100,20))
         
     def displayScore():
         maxScore = maxValue(mapSize, gameArea)
@@ -282,6 +289,7 @@ def main():
                     if mouseX >= 0 and mouseY >= 0:
                         if mouseX < mapSize and mouseY < mapSize:
                             if adjCells(mapSize, gameArea, mouseX, mouseY):
+                                maxBefore = maxValue(mapSize, gameArea)
                                 numTurns += 1
                                 firstSelection= False
                                 myTuple = (mouseX, mouseY)
@@ -289,6 +297,7 @@ def main():
                                 propagation(mapSize, gameArea, myTuple, tupleList)
                                 modification(mapSize, gameArea, tupleList)
                                 gravity(mapSize, gameArea, proba)
+                                if maxValue(mapSize, gameArea) > maxBefore: oneUp.play()
                                 drawGrid()
 
         screen.blit(surface, (0, 0))
